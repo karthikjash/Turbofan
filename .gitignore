@@ -1,6 +1,14 @@
+venv/
+.env/
+
+
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 *.ipynb_checkpoints
-data/processed/
+data/processed/*.npy
 outputs/
-.env
+.DS_Store
 

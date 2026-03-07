@@ -5,7 +5,7 @@ def load_train_data(path):
 
     df = pd.read_csv(
             path,
-            sep="\s+",
+            sep=r"\s+",
             header=None
             )
     df = df.iloc[:, :26]
