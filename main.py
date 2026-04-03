@@ -5,6 +5,7 @@ from src.preprocessing.op_condition_cluster import cluster_operating_conditions
 from src.preprocessing.normalization import normalize_sensors
 from src.features.sliding_window import create_sliding_windows
 from src.features.pca_reduction import apply_pca
+from src.models.hmm_model import build_hmm
 
 import numpy as np
 import os
@@ -72,6 +73,8 @@ def main():
     print("\nExplained variance ratio:")
     print(pca.explained_variance_ratio_)
 
+
+
     # -----------------------------
     # 9. Save Processed Data
     # -----------------------------
@@ -95,6 +98,49 @@ def main():
 
     print("\nSample dataframe:")
     print(df.head())
+    # -----------------------------
+    # 11. Prepare Data for HMM
+    # -----------------------------
+    print("\nPreparing data for HMM")
+
+    samples, timesteps, features = X.shape
+    X_hmm = X.reshape(-1, features)
+
+    print("Shape for HMM:", X_hmm.shape)
+
+    # -----------------------------
+    # 12. Build HMM Model
+    # -----------------------------
+    print("\nBuilding HMM model")
+
+    model = build_hmm(n_states=4, n_features=features)
+
+    # -----------------------------
+    # 13. Train HMM (EM)
+    # -----------------------------
+    print("\nTraining HMM using EM (Baum-Welch)")
+
+    model.fit(X_hmm)
+
+    # -----------------------------
+    # 14. Predict Hidden States
+    # -----------------------------
+    print("\nPredicting hidden states")
+
+    hidden_states = model.predict(X_hmm)
+
+    hidden_states = hidden_states.reshape(samples, timesteps)
+
+    print("Hidden states shape:", hidden_states.shape)
+
+    print("\nExample hidden states (first sequence):")
+    print(hidden_states[0])
+
+    # -----------------------------
+    # 15. Save States
+    # -----------------------------
+    np.save("data/processed/hidden_states.npy", hidden_states)
+
 
 
 if __name__ == "__main__":
